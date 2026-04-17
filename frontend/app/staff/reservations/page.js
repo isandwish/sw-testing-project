@@ -3,26 +3,25 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getUser } from "@/lib/auth";
+import {
+  getAllReservations,
+  updateReservation,
+  cancelReservation,
+} from "@/lib/api";
 
-const API = process.env.NEXT_PUBLIC_API_URL;
-
-export default function StaffReservations() {
+export default function StaffReservationsPage() {
   const router = useRouter();
+
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // =========================
-  // Protect route
+  // Protect route (staff only)
   // =========================
   useEffect(() => {
     const user = getUser();
 
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-
-    if (user.role !== "staff") {
+    if (!user || user.role !== "staff") {
       router.push("/");
     }
   }, []);
@@ -33,22 +32,10 @@ export default function StaffReservations() {
   const fetchReservations = async () => {
     try {
       setLoading(true);
-
-      const user = getUser();
-
-      const res = await fetch(`${API}/admin/reservations`, {
-        headers: {
-            Authorization: "Bearer mock",
-            "x-role": user?.role,
-            "Content-Type": "application/json",
-            }
-      });
-
-      const data = await res.json();
-
-      setReservations(data.reservations || []);
+      const res = await getAllReservations();
+      setReservations(res.reservations || []);
     } catch (err) {
-      console.error("Failed to fetch reservations:", err);
+      console.error(err);
       setReservations([]);
     } finally {
       setLoading(false);
@@ -62,18 +49,10 @@ export default function StaffReservations() {
   // =========================
   // Update status
   // =========================
-  const updateStatus = async (id, status) => {
+  const handleStatusChange = async (id, status) => {
     try {
-      await fetch(`${API}/reservations/${id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${getUser()?.token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status }),
-      });
-
-      fetchReservations();
+      await updateReservation(id, { status });
+      await fetchReservations();
     } catch (err) {
       console.error("Update failed:", err);
     }
@@ -84,7 +63,7 @@ export default function StaffReservations() {
 
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">📋 Manage Reservations</h1>
+        <h1 className="text-2xl font-bold">📋 Staff Reservations</h1>
 
         <button
           onClick={fetchReservations}
@@ -101,10 +80,12 @@ export default function StaffReservations() {
         <p className="text-gray-500">No reservations found</p>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
+
           {reservations.map((r) => (
             <div key={r.id} className="bg-white p-4 rounded shadow">
 
-              <div className="flex justify-between">
+              {/* HEADER */}
+              <div className="flex justify-between items-center">
                 <h2 className="font-semibold">
                   Table #{r.tableId}
                 </h2>
@@ -114,8 +95,9 @@ export default function StaffReservations() {
                 </span>
               </div>
 
+              {/* INFO */}
               <p className="text-sm text-gray-500 mt-1">
-                {r.date} • {r.time}
+                📅 {r.date} • ⏰ {r.time}
               </p>
 
               <p className="text-sm mt-2">
@@ -126,34 +108,39 @@ export default function StaffReservations() {
                 {r.customer?.email}
               </p>
 
+              <p className="text-xs text-gray-500">
+                👥 {r.guestCount} guests
+              </p>
+
               {/* ACTIONS */}
-              <div className="flex gap-2 mt-3">
+              <div className="flex flex-wrap gap-2 mt-3">
 
                 <button
-                  onClick={() => updateStatus(r.id, "CONFIRMED")}
+                  onClick={() => handleStatusChange(r.id, "CONFIRMED")}
                   className="text-xs bg-green-500 text-white px-2 py-1 rounded"
                 >
                   Confirm
                 </button>
 
                 <button
-                  onClick={() => updateStatus(r.id, "CANCELLED")}
+                  onClick={() => handleStatusChange(r.id, "CANCELLED")}
                   className="text-xs bg-red-500 text-white px-2 py-1 rounded"
                 >
                   Cancel
                 </button>
 
                 <button
-                  onClick={() => updateStatus(r.id, "COMPLETED")}
+                  onClick={() => handleStatusChange(r.id, "COMPLETED")}
                   className="text-xs bg-blue-500 text-white px-2 py-1 rounded"
                 >
-                  Done
+                  Complete
                 </button>
 
               </div>
 
             </div>
           ))}
+
         </div>
       )}
     </div>
