@@ -2,7 +2,12 @@ const express = require('express');
 const router = express.Router();
 
 const { verifyToken } = require('../middleware/auth.middleware');
-const { restaurantDB, notificationsDB, tablesDB } = require('../data/mockDB');
+const { 
+  restaurantDB, 
+  notificationsDB, 
+  tablesDB,
+  reservationsDB 
+} = require('../data/mockDB');
 
 
 // =========================
@@ -19,6 +24,7 @@ const isValidPhone = (phone) =>
 const isAdminOrStaff = (role) =>
     ['admin', 'staff'].includes(role);
 
+const isAdmin = (role) => role === 'admin';
 
 // =========================
 // View Reservations (Admin + Staff)
@@ -28,7 +34,7 @@ router.get('/reservations', verifyToken, (req, res) => {
         return res.status(403).json({ error: 'Forbidden' });
     }
 
-    const result = reservationsDB.map(r => ({
+    const result = (reservationsDB || []).map(r => ({
         id: r.id,
         tableId: r.tableId,
         date: r.date,
@@ -144,6 +150,88 @@ router.put('/restaurant', verifyToken, (req, res) => {
     res.status(200).json({
         message: 'Restaurant info updated',
         restaurant: restaurantDB
+    });
+});
+
+// Tables
+router.get('/tables', verifyToken, (req, res) => {
+    if (!isAdminOrStaff(req.user.role)) {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    res.status(200).json({
+        count: tablesDB.length,
+        tables: tablesDB
+    });
+});
+
+router.post('/tables', verifyToken, (req, res) => {
+    if (!isAdmin(req.user.role)) {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const { capacity, status } = req.body;
+
+    if (!capacity) {
+        return res.status(400).json({ error: 'Capacity is required' });
+    }
+
+    const newTable = {
+        id: Date.now(),
+        capacity,
+        status: status || 'AVAILABLE'
+    };
+
+    tablesDB.push(newTable);
+
+    res.status(201).json({
+        message: 'Table created',
+        table: newTable
+    });
+});
+
+router.put('/tables/:id', verifyToken, (req, res) => {
+    if (!isAdmin(req.user.role)) {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const tableId = Number(req.params.id);
+    const table = tablesDB.find(t => t.id === tableId);
+
+    if (!table) {
+        return res.status(404).json({ error: 'Table not found' });
+    }
+
+    const { capacity, status } = req.body;
+
+    if (capacity !== undefined) table.capacity = capacity;
+    if (status && VALID_TABLE_STATUS.includes(status)) {
+        table.status = status;
+    }
+
+    res.status(200).json({
+        message: 'Table updated',
+        table
+    });
+});
+
+router.delete('/tables/:id', verifyToken, (req, res) => {
+    if (!isAdmin(req.user.role)) {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const tableId = Number(req.params.id);
+    const index = tablesDB.findIndex(t => t.id === tableId);
+
+    if (index === -1) {
+        return res.status(404).json({ error: 'Table not found' });
+    }
+
+    const deleted = tablesDB.splice(index, 1);
+
+    res.status(200).json({
+        message: 'Table deleted',
+        table: deleted[0]
     });
 });
 

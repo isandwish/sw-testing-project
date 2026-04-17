@@ -18,6 +18,10 @@
 * GET /admin/notifications
 * PUT /admin/tables/:id/status
 * PUT /admin/restaurant
+* GET /admin/tables
+* POST /admin/tables
+* PUT /admin/tables/:id
+* DELETE /admin/tables/:id
 
 ## 👤 User
 * GET /users/profile
