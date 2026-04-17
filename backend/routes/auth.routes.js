@@ -25,7 +25,53 @@ function isValidPhone(phoneNumber) {
     return /^[0-9]{10,15}$/.test(phoneNumber);
 }
 
+// =========================
+// Rate Limit Store
+// =========================
+const loginAttempts = new Map();
+// โครงสร้าง: key = email → { count, lockedUntil }
 
+const MAX_ATTEMPTS = 5;
+const LOCK_DURATION_MS = 15 * 60 * 1000; // ล็อก 15 นาที
+
+function getRateLimit(email) {
+    return loginAttempts.get(email) || { count: 0, lockedUntil: null };
+}
+
+function recordFailedAttempt(email) {
+    const record = getRateLimit(email);
+    record.count += 1;
+
+    if (record.count >= MAX_ATTEMPTS) {
+        record.lockedUntil = Date.now() + LOCK_DURATION_MS;
+    }
+
+    loginAttempts.set(email, record);
+}
+
+function resetAttempts(email) {
+    loginAttempts.delete(email);
+}
+
+function isLocked(email) {
+    const record = getRateLimit(email);
+
+    if (!record.lockedUntil) return false;
+
+    // หมดเวลาล็อกแล้ว → รีเซ็ตอัตโนมัติ
+    if (Date.now() > record.lockedUntil) {
+        resetAttempts(email);
+        return false;
+    }
+
+    return true;
+}
+
+function getRemainingLockTime(email) {
+    const record = getRateLimit(email);
+    if (!record.lockedUntil) return 0;
+    return Math.ceil((record.lockedUntil - Date.now()) / 1000); // หน่วยวินาที
+}
 // =========================
 // FR-01 Registration
 // =========================
@@ -106,21 +152,46 @@ router.post('/login', (req, res) => {
         });
     }
 
+    // ---- Rate limit check ----
+    if (isLocked(email)) {
+        const remaining = getRemainingLockTime(email);
+        return res.status(429).json({
+            error: `Too many failed attempts. Please try again in ${remaining} seconds.`
+        });
+    }
+
     // ---- Find user ----
     const user = usersDB.find(u => u.email === email);
 
     if (!user) {
+        recordFailedAttempt(email);        // ← นับครั้งด้วย
         return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // ---- Password check (mock) ----
+    // ---- Password check ----
     const hashedInput = `hashed_${password}`;
 
     if (user.passwordHash !== hashedInput) {
-        return res.status(401).json({ error: 'Invalid credentials' });
+        recordFailedAttempt(email);        // ← นับครั้งด้วย
+
+        const record = getRateLimit(email);
+        const attemptsLeft = MAX_ATTEMPTS - record.count;
+
+        if (attemptsLeft <= 0) {
+            const remaining = getRemainingLockTime(email);
+            return res.status(429).json({
+                error: `Too many failed attempts. Locked for ${remaining} seconds.`
+            });
+        }
+
+        return res.status(401).json({
+            error: `Invalid credentials. ${attemptsLeft} attempt(s) remaining.`
+        });
     }
 
-    // ---- Success response ----
+    // ---- Login สำเร็จ → รีเซ็ต counter ----
+    resetAttempts(email);
+
     return res.status(200).json({
         token: 'mock-jwt-token',
         role: user.role,
