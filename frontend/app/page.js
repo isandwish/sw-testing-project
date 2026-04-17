@@ -156,8 +156,8 @@ export default function Home() {
         {/* STAFF */}
         {user?.role === "staff" && (
           <>
-            {/* ROW 1 - small cards */}
-            <div className="grid md:grid-cols-3 gap-6">
+            {/* ROW 1 - Main functions */}
+            <div className="grid md:grid-cols-2 gap-6">
 
               <div
                 className="card cursor-pointer"
@@ -165,7 +165,7 @@ export default function Home() {
               >
                 <h3 className="font-semibold">👨‍🍳 Staff Dashboard</h3>
                 <p className="text-gray-500 text-sm">
-                  Manage restaurant operations
+                  Manage restaurant operations overview
                 </p>
               </div>
 
@@ -179,37 +179,52 @@ export default function Home() {
                 </p>
               </div>
 
+            </div>
+
+            {/* ROW 2 - Operations */}
+            <div className="grid md:grid-cols-2 gap-6 mt-6">
+
+              <div
+                className="card cursor-pointer"
+                onClick={() => router.push("/staff/walk-in")}
+              >
+                <h3 className="font-semibold">🚶 Walk-in Reservation</h3>
+                <p className="text-gray-500 text-sm">
+                  Create walk-in booking for customers
+                </p>
+              </div>
+
               <div
                 className="card cursor-pointer"
                 onClick={() => router.push("/staff/notifications")}
               >
                 <h3 className="font-semibold">🔔 Notifications</h3>
                 <p className="text-gray-500 text-sm">
-                  Reservation updates
+                  Reservation updates & system alerts
                 </p>
               </div>
 
             </div>
 
-            {/* ROW 2 - RESTAURANT CARD (same style but smaller feel) */}
+            {/* ROW 3 - Restaurant info */}
             <div className="mt-8">
               <div
                 onClick={() => router.push("/restaurant")}
-                className="bg-gradient-to-r from-gray-800 to-gray-600 text-white rounded-2xl p-6 cursor-pointer shadow hover:shadow-lg transition"
+                className="bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-2xl p-6 cursor-pointer shadow hover:shadow-lg transition"
               >
                 <div className="flex justify-between items-center">
 
                   <div>
                     <h2 className="text-xl font-bold">
-                      🍽 Restaurant Overview
+                      🍽 Restaurant Information
                     </h2>
                     <p className="text-white/70 text-sm mt-1">
-                      View restaurant info & operating hours
+                      View opening hours, contact & restaurant details
                     </p>
                   </div>
 
-                  <div className="bg-white text-gray-800 px-4 py-2 rounded-full text-sm font-semibold">
-                    Open →
+                  <div className="bg-white text-gray-900 px-4 py-2 rounded-full text-sm font-semibold">
+                    View →
                   </div>
 
                 </div>
@@ -258,13 +273,23 @@ export default function Home() {
             {/* RESERVATIONS */}
             <div
               className="card cursor-pointer"
-              onClick={() => router.push("/admin/reservations")}
+              onClick={() => router.push("/staff/reservations")}
             >
               <h3 className="font-semibold">📋 Reservations</h3>
               <p className="text-gray-500 text-sm">
                 Full control: confirm, cancel, delete bookings
               </p>
             </div>
+
+            <div
+                className="card cursor-pointer"
+                onClick={() => router.push("/staff/walk-in")}
+              >
+                <h3 className="font-semibold">🚶 Walk-in Reservation</h3>
+                <p className="text-gray-500 text-sm">
+                  Create walk-in booking for customers
+                </p>
+              </div>
 
             {/* NOTIFICATIONS */}
             <div

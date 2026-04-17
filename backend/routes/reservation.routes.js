@@ -191,14 +191,39 @@ router.post('/walk-in', verifyToken, (req, res) => {
         return res.status(403).json({ error: 'Forbidden' });
     }
 
-    const { customerName, date, time, guestCount } = req.body;
+    const { customerName, date, time, guestCount, tableId } = req.body;
 
-    const table = tablesDB.find(t =>
-        t.capacity >= guestCount && isTableAvailable(t.id, date, time)
-    );
+    // =========================
+    // ถ้ามี tableId → ใช้โต๊ะนั้นเลย
+    // =========================
+    let table;
 
-    if (!table) {
-        return res.status(409).json({ error: 'No table available' });
+    if (tableId) {
+        table = tablesDB.find(t => t.id === tableId);
+
+        if (!table) {
+            return res.status(404).json({ error: 'Table not found' });
+        }
+
+        if (table.capacity < guestCount) {
+            return res.status(409).json({ error: 'Table capacity not enough' });
+        }
+
+        if (!isTableAvailable(table.id, date, time)) {
+            return res.status(409).json({ error: 'Table not available' });
+        }
+    } 
+    // =========================
+    // ถ้าไม่ส่ง tableId → auto find (fallback)
+    // =========================
+    else {
+        table = tablesDB.find(t =>
+            t.capacity >= guestCount && isTableAvailable(t.id, date, time)
+        );
+
+        if (!table) {
+            return res.status(409).json({ error: 'No table available' });
+        }
     }
 
     const reservation = {
