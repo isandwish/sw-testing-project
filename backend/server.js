@@ -10,5 +10,5 @@ app.use('/admin', require('./routes/admin.routes'));
 app.use('/users', require('./routes/user.routes'));
 
 app.listen(5000, () => {
-    console.log('Mock Security API running on http://localhost:5000');
+    console.log('Mock API running on http://localhost:5000');
 });
