@@ -9,6 +9,6 @@ app.use('/reservations', require('./routes/reservation.routes'));
 app.use('/admin', require('./routes/admin.routes'));
 app.use('/users', require('./routes/user.routes'));
 
-app.listen(3000, () => {
-    console.log('Mock Security API running on http://localhost:3000');
+app.listen(5000, () => {
+    console.log('Mock Security API running on http://localhost:5000');
 });
