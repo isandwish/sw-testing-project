@@ -2,13 +2,13 @@
     "customer_01" : {
         "date" : "2026-04-20",
         "time" : "12:30",
-        "guest" : "5",
-        "request" : "We have 2 children."
+        "guest" : "3",
+        "request" : "I have 2 children."
     },
 
     "customer_02" : {
         "date" : "2026-04-22",
-        "time" : "10:30",
+        "time" : "18:30",
         "guest" : "2",
         "request" : ""
     },
@@ -16,11 +16,11 @@
         "date" : "2026-04-30",
         "time" : "14:30",
         "guest" : "5",
-        "request" : "Grandfather's birthday."
+        "request" : ""
     },
     "customer_04" : {
         "date" : "2026-04-19",
-        "time" : "9:30",
+        "time" : "16:30",
         "guest" : "1",
         "request" : "Heart broken."
     }

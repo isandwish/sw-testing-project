@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Green Garden Bistro",
+    "opening_hour": "09:00",
+    "closing_hour": "21:00",
+    "phone": "0814445566",
+    "email": "info@greengarden.com"
+  },
+  {
+    "name": "The Spicy Corner",
+    "opening_hour": "11:00",
+    "closing_hour": "23:00",
+    "phone": "0897778899",
+    "email": "order@spicycorner.io"
+  },
+  {
+    "name": "Midnight Ramen",
+    "opening_hour": "17:00",
+    "closing_hour": "03:00",
+    "phone": "029990000",
+    "email": "hello@midnightramen.jp"
+  },
+  {
+    "name": "Ocean Breeze Seafood",
+    "opening_hour": "10:00",
+    "closing_hour": "22:00",
+    "phone": "038111222",
+    "email": "booking@oceanbreeze.net"
+  }
+]
