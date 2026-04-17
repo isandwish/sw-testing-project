@@ -4,20 +4,18 @@ const SECRET_KEY = "super-secret-key-for-restaurants";
 
 // verify JWT
 function verifyToken(req, res, next) {
-    const auth = req.headers.authorization;
+    const role = req.headers["x-role"];
+    const userId = req.headers["x-user-id"];
+    const email = req.headers["x-email"];
 
-    // 👉 MOCK MODE: ถ้าไม่มี token ก็ปล่อยผ่าน
-    if (!auth) {
-        req.user = {
-            id: 1,
-            role: "customer"
-        };
-        return next();
+    if (!role) {
+        return res.status(401).json({ error: "Missing role" });
     }
 
     req.user = {
-        id: 1,
-        role: "customer"
+        role,
+        userId: userId || null,
+        email: email || null
     };
 
     next();

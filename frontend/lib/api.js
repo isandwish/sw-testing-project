@@ -32,15 +32,17 @@ const getToken = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   // 👉 fallback mock token
-  return user?.token || "mock-token";
+  return user?.token || null;
 };
 
 const authHeaders = () => {
-  const token = getToken();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   return {
     "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {})
+    "x-role": user?.role,
+    "x-user-id": user?.userId,
+    "x-email": user?.email
   };
 };
 
@@ -55,7 +57,7 @@ export const getAvailability = (data) =>
 export const createReservation = (data) =>
   fetch(`${API}/reservations`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify(data),
   }).then((r) => r.json());
 
@@ -93,3 +95,40 @@ export const getMyReservations = () =>
   fetch(`${API}/reservations/history`, {
     headers: authHeaders(),
   }).then((r) => r.json());
+
+export const getTables = async () => {
+  const res = await fetch(`${API}/admin/tables`, {
+    headers: authHeaders()
+  });
+
+  return res.json();
+};
+
+export const createTable = async (data) => {
+  const res = await fetch(`${API}/admin/tables`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  return res.json();
+};
+
+export const updateTable = async (id, data) => {
+  const res = await fetch(`${API}/admin/tables/${id}`, {
+    method: "PUT",
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  return res.json();
+};
+
+export const deleteTable = async (id) => {
+  const res = await fetch(`${API}/admin/tables/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+
+  return res.json();
+};
