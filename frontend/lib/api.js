@@ -41,9 +41,9 @@ const authHeaders = () => ({
 // Reservations
 // =========================
 export const getAvailability = (data) =>
-  fetch(`${API}/reservations/availability`, {
-    method: "GET",
-  }).then((r) => r.json());
+  fetch(
+    `${API}/reservations/availability?date=${data.date}&time=${data.time}&guestCount=${data.guestCount}`
+  ).then((r) => r.json());
 
 export const createReservation = (data) =>
   fetch(`${API}/reservations`, {

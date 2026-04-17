@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { getUser, logout } from "@/lib/auth";
+import { getUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -13,63 +12,8 @@ export default function Home() {
     setUser(getUser());
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    setUser(null);
-    router.push("/");
-  };
-
-  const displayName = user?.name || user?.email || "User";
-
   return (
     <div className="min-h-screen bg-gray-50">
-
-      {/* NAVBAR */}
-      <div className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">🍽 RTS</h1>
-
-        <div className="flex items-center gap-3">
-
-          {/* NOT LOGIN */}
-          {!user ? (
-            <>
-              <Link
-                href="/login"
-                className="px-4 py-1 text-sm text-gray-700 hover:text-blue-600 transition"
-              >
-                Login
-              </Link>
-
-              <Link
-                href="/register"
-                className="px-4 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-              >
-                Register
-              </Link>
-            </>
-          ) : (
-            <>
-              {/* USER INFO */}
-              <div className="flex items-center gap-2 text-sm text-gray-700">
-                <span className="font-medium">{displayName}</span>
-
-                <span className="text-xs bg-gray-200 px-2 py-0.5 rounded">
-                  {user.role}
-                </span>
-              </div>
-
-              {/* LOGOUT */}
-              <button
-                onClick={handleLogout}
-                className="text-sm text-red-500 hover:text-red-600 transition"
-              >
-                Logout
-              </button>
-            </>
-          )}
-
-        </div>
-      </div>
 
       {/* HERO */}
       <div className="text-center py-16 px-4">
@@ -87,19 +31,27 @@ export default function Home() {
         {/* GUEST */}
         {!user && (
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="card">
-              <h3 className="font-semibold">Check Availability</h3>
+
+            <div
+              className="card cursor-pointer"
+              onClick={() => router.push("/availability")}
+            >
+              <h3 className="font-semibold">📅 Check Availability</h3>
               <p className="text-gray-500 text-sm">
                 View available tables before booking
               </p>
             </div>
 
-            <div className="card">
-              <h3 className="font-semibold">Create Account</h3>
+            <div
+              className="card cursor-pointer"
+              onClick={() => router.push("/register")}
+            >
+              <h3 className="font-semibold">🆕 Create Account</h3>
               <p className="text-gray-500 text-sm">
                 Register to start booking tables
               </p>
             </div>
+
           </div>
         )}
 

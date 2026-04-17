@@ -4,6 +4,7 @@ import { useState } from "react";
 import { login } from "@/lib/api";
 import { setUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,10 +24,9 @@ export default function LoginPage() {
     const res = await login(form);
 
     if (res.token) {
-      setUser(res); // store token + role
+      setUser(res);
 
-      router.push("/");
-
+      window.location.href = "/";
     } else {
       setError(res.error || "Login failed");
     }
@@ -38,6 +38,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
 
       <div className="bg-white p-6 rounded-xl shadow w-80 space-y-3">
+
         <h1 className="text-xl font-bold">Login</h1>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -62,6 +63,15 @@ export default function LoginPage() {
         >
           {loading ? "Loading..." : "Login"}
         </button>
+
+        {/* REGISTER LINK */}
+        <p className="text-sm text-center text-gray-500">
+          Don’t have an account?{" "}
+          <Link href="/register" className="text-blue-500 hover:underline">
+            Register
+          </Link>
+        </p>
+
       </div>
 
     </div>
