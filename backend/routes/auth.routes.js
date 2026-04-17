@@ -123,7 +123,9 @@ router.post('/login', (req, res) => {
     // ---- Success response ----
     return res.status(200).json({
         token: 'mock-jwt-token',
-        role: user.role
+        role: user.role,
+        name: user.fullName,
+        email: user.email
     });
 });
 

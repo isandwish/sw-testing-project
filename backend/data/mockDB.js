@@ -1,6 +1,9 @@
 // mock database
 const usersDB = [
-    { id: 1, email: "customer@test.com", passwordHash: "hashed_P@ssw0rd123", role: "customer" }
+    { id: 1, email: "admin@admin.com", passwordHash: "hashed_Admin1234", role: "admin" },
+    { id: 2, email: "staff@staff.com", passwordHash: "hashed_Staff1234", role: "staff" },
+    { id: 3, email: "customer@customer.com", passwordHash: "hashed_Customer1234", role: "customer" },
+    { id: 4, email: "customer@test.com", passwordHash: "hashed_P@ssw0rd123", role: "customer" }
 ];
 
 // tables
@@ -12,15 +15,7 @@ const tablesDB = [
 ];
 
 // existing reservations (mock)
-const reservationsDB = [
-    {
-        id: 1001,
-        tableId: 2,
-        date: "2026-05-20",
-        time: "18:00",
-        guestCount: 4
-    }
-];
+const reservationsDB = [];
 
 const notificationsDB = [];
 
