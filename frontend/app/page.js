@@ -281,6 +281,16 @@ export default function Home() {
               </p>
             </div>
 
+            <div
+                className="card cursor-pointer"
+                onClick={() => router.push("/staff/walk-in")}
+              >
+                <h3 className="font-semibold">🚶 Walk-in Reservation</h3>
+                <p className="text-gray-500 text-sm">
+                  Create walk-in booking for customers
+                </p>
+              </div>
+
             {/* NOTIFICATIONS */}
             <div
               className="card cursor-pointer"
