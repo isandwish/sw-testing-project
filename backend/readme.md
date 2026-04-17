@@ -16,6 +16,7 @@
 ## 👨‍🍳 Admin
 * GET /admin/reservations
 * GET /admin/notifications
+* POST /admin/notifications
 * PUT /admin/tables/:id/status
 * PUT /admin/restaurant
 * GET /admin/tables
