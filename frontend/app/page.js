@@ -30,78 +30,192 @@ export default function Home() {
 
         {/* GUEST */}
         {!user && (
-          <div className="grid md:grid-cols-2 gap-6">
+          <>
+            {/* ROW 1 */}
+            <div className="grid md:grid-cols-2 gap-6">
 
-            <div
-              className="card cursor-pointer"
-              onClick={() => router.push("/availability")}
-            >
-              <h3 className="font-semibold">📅 Check Availability</h3>
-              <p className="text-gray-500 text-sm">
-                View available tables before booking
-              </p>
+              <div
+                className="card cursor-pointer"
+                onClick={() => router.push("/availability")}
+              >
+                <h3 className="font-semibold">📅 Check Availability</h3>
+                <p className="text-gray-500 text-sm">
+                  View available tables before booking
+                </p>
+              </div>
+
+              <div
+                className="card cursor-pointer"
+                onClick={() => router.push("/register")}
+              >
+                <h3 className="font-semibold">🆕 Create Account</h3>
+                <p className="text-gray-500 text-sm">
+                  Register to start booking tables
+                </p>
+              </div>
+
             </div>
 
-            <div
-              className="card cursor-pointer"
-              onClick={() => router.push("/register")}
-            >
-              <h3 className="font-semibold">🆕 Create Account</h3>
-              <p className="text-gray-500 text-sm">
-                Register to start booking tables
-              </p>
-            </div>
+            {/* ROW 2 BIG CARD */}
+            <div className="mt-8">
 
-          </div>
+              <div
+                onClick={() => router.push("/restaurant")}
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl p-8 cursor-pointer shadow-lg hover:shadow-xl transition"
+              >
+
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+
+                  <div>
+                    <h2 className="text-2xl font-bold">
+                      🍽️ About Our Restaurant
+                    </h2>
+
+                    <p className="text-white/80 mt-2">
+                      View restaurant information, opening hours, and contact details
+                    </p>
+                  </div>
+
+                  <div className="bg-white text-blue-600 px-5 py-2 rounded-full font-semibold">
+                    View Details →
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </>
         )}
 
         {/* CUSTOMER */}
         {user?.role === "customer" && (
-          <div className="grid md:grid-cols-3 gap-6">
+          <>
+            {/* ROW 1 */}
+            <div className="grid md:grid-cols-3 gap-6">
 
-            <div className="card cursor-pointer" onClick={() => router.push("/customer")}>
-              <h3 className="font-semibold">🍽 Make Reservation</h3>
-              <p className="text-gray-500 text-sm">
-                Book a table at your favorite restaurant
-              </p>
+              <div
+                className="card cursor-pointer"
+                onClick={() => router.push("/customer")}
+              >
+                <h3 className="font-semibold">🍽 Make Reservation</h3>
+                <p className="text-gray-500 text-sm">
+                  Book a table at your favorite restaurant
+                </p>
+              </div>
+
+              <div
+                className="card cursor-pointer"
+                onClick={() => router.push("/customer/history")}
+              >
+                <h3 className="font-semibold">📋 My Reservations</h3>
+                <p className="text-gray-500 text-sm">
+                  View and manage your bookings
+                </p>
+              </div>
+
+              <div
+                className="card cursor-pointer"
+                onClick={() => router.push("/availability")}
+              >
+                <h3 className="font-semibold">📅 Check Availability</h3>
+                <p className="text-gray-500 text-sm">
+                  See available tables before booking
+                </p>
+              </div>
             </div>
 
-            <div className="card cursor-pointer" onClick={() => router.push("/customer/history")}>
-              <h3 className="font-semibold">📋 My Reservations</h3>
-              <p className="text-gray-500 text-sm">
-                View and manage your bookings
-              </p>
-            </div>
+            {/* ROW 2 - RESTAURANT CARD */}
+            <div className="mt-8">
+              <div
+                onClick={() => router.push("/restaurant")}
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl p-8 cursor-pointer shadow-lg hover:shadow-xl transition"
+              >
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 
-            <div className="card cursor-pointer" onClick={() => router.push("/availability")}>
-              <h3 className="font-semibold">📅 Check Availability</h3>
-              <p className="text-gray-500 text-sm">
-                See available tables before booking
-              </p>
-            </div>
+                  <div>
+                    <h2 className="text-2xl font-bold">
+                      🍽️ About Our Restaurant
+                    </h2>
 
-          </div>
+                    <p className="text-white/80 mt-2">
+                      View restaurant information, opening hours, and contact details
+                    </p>
+                  </div>
+
+                  <div className="bg-white text-blue-600 px-5 py-2 rounded-full font-semibold">
+                    View Details →
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </>
         )}
 
         {/* STAFF */}
         {user?.role === "staff" && (
-          <div className="grid md:grid-cols-2 gap-6">
+          <>
+            {/* ROW 1 - small cards */}
+            <div className="grid md:grid-cols-3 gap-6">
 
-            <div className="card cursor-pointer" onClick={() => router.push("/staff")}>
-              <h3 className="font-semibold">👨‍🍳 Staff Dashboard</h3>
-              <p className="text-gray-500 text-sm">
-                Manage restaurant operations
-              </p>
+              <div
+                className="card cursor-pointer"
+                onClick={() => router.push("/staff")}
+              >
+                <h3 className="font-semibold">👨‍🍳 Staff Dashboard</h3>
+                <p className="text-gray-500 text-sm">
+                  Manage restaurant operations
+                </p>
+              </div>
+
+              <div
+                className="card cursor-pointer"
+                onClick={() => router.push("/staff/reservations")}
+              >
+                <h3 className="font-semibold">📋 Reservations</h3>
+                <p className="text-gray-500 text-sm">
+                  View & update bookings
+                </p>
+              </div>
+
+              <div
+                className="card cursor-pointer"
+                onClick={() => router.push("/staff/notifications")}
+              >
+                <h3 className="font-semibold">🔔 Notifications</h3>
+                <p className="text-gray-500 text-sm">
+                  Reservation updates
+                </p>
+              </div>
+
             </div>
 
-            <div className="card cursor-pointer" onClick={() => router.push("/staff/reservations")}>
-              <h3 className="font-semibold">📋 Manage Reservations</h3>
-              <p className="text-gray-500 text-sm">
-                View and update reservations
-              </p>
-            </div>
+            {/* ROW 2 - RESTAURANT CARD (same style but smaller feel) */}
+            <div className="mt-8">
+              <div
+                onClick={() => router.push("/restaurant")}
+                className="bg-gradient-to-r from-gray-800 to-gray-600 text-white rounded-2xl p-6 cursor-pointer shadow hover:shadow-lg transition"
+              >
+                <div className="flex justify-between items-center">
 
-          </div>
+                  <div>
+                    <h2 className="text-xl font-bold">
+                      🍽 Restaurant Overview
+                    </h2>
+                    <p className="text-white/70 text-sm mt-1">
+                      View restaurant info & operating hours
+                    </p>
+                  </div>
+
+                  <div className="bg-white text-gray-800 px-4 py-2 rounded-full text-sm font-semibold">
+                    Open →
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </>
         )}
 
         {/* ADMIN */}
