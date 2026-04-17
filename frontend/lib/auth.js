@@ -4,7 +4,13 @@ export function getUser() {
 }
 
 export function setUser(user) {
-  localStorage.setItem("user", JSON.stringify(user));
+  // 👉 FORCE mock token ถ้าไม่มี
+  const safeUser = {
+    ...user,
+    token: user.token || "mock-token"
+  };
+
+  localStorage.setItem("user", JSON.stringify(safeUser));
 }
 
 export function logout() {

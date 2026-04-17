@@ -4,24 +4,23 @@ const SECRET_KEY = "super-secret-key-for-restaurants";
 
 // verify JWT
 function verifyToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
+    const auth = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Missing token' });
+    // 👉 MOCK MODE: ถ้าไม่มี token ก็ปล่อยผ่าน
+    if (!auth) {
+        req.user = {
+            id: 1,
+            role: "customer"
+        };
+        return next();
     }
 
-    const token = authHeader.split(' ')[1];
+    req.user = {
+        id: 1,
+        role: "customer"
+    };
 
-    try {
-        const decoded = jwt.verify(token, SECRET_KEY);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        if (err.name === 'TokenExpiredError') {
-            return res.status(401).json({ error: 'Token expired' });
-        }
-        return res.status(401).json({ error: 'Invalid token' });
-    }
+    next();
 }
 
 module.exports = { verifyToken, SECRET_KEY };

@@ -24,7 +24,11 @@ export default function LoginPage() {
     const res = await login(form);
 
     if (res.token) {
-      setUser(res);
+      setUser({
+        token: res.token,
+        role: res.role,
+        email: form.email
+      });
 
       window.location.href = "/";
     } else {

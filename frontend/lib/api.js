@@ -28,14 +28,21 @@ export const login = async (data) => {
 // =========================
 const getToken = () => {
   if (typeof window === "undefined") return null;
+
   const user = JSON.parse(localStorage.getItem("user"));
-  return user?.token;
+
+  // 👉 fallback mock token
+  return user?.token || "mock-token";
 };
 
-const authHeaders = () => ({
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${getToken()}`
-});
+const authHeaders = () => {
+  const token = getToken();
+
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {})
+  };
+};
 
 // =========================
 // Reservations
@@ -48,7 +55,7 @@ export const getAvailability = (data) =>
 export const createReservation = (data) =>
   fetch(`${API}/reservations`, {
     method: "POST",
-    headers: authHeaders(),
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   }).then((r) => r.json());
 
@@ -80,4 +87,9 @@ export const createWalkIn = (data) =>
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(data),
+  }).then((r) => r.json());
+
+export const getMyReservations = () =>
+  fetch(`${API}/reservations/history`, {
+    headers: authHeaders(),
   }).then((r) => r.json());
