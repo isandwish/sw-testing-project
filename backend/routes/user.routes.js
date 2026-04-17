@@ -1,15 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const { usersDB } = require('../data/mockDB');
+const { verifyToken } = require('../middleware/auth.middleware');
 
 
 // =========================
 // Get User Profile
 // =========================
-router.get('/profile', (req, res) => {
-    // mock current user (temporary: first user in DB)
-    const user = usersDB[0];
+router.get('/profile', verifyToken, (req, res) => {
+    const user = req.user;
 
     if (!user) {
         return res.status(404).json({ error: 'User not found' });
