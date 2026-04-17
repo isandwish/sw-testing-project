@@ -1,0 +1,15 @@
+{
+    "customer" : {
+        "email" : "customer@customer.com",
+        "pwd" : "Customer1234"
+    },
+
+    "staff" : {
+        "email" : "staff@staff.com",
+        "pwd" : "Staff1234"
+    },
+    "admin" : {
+        "email" : "admin@admin.com",
+        "pwd" : "Admin1234"
+    }
+}
