@@ -10,7 +10,7 @@ export default function LoginPage() {
 
   const [form, setForm] = useState({
     email: "",
-    password: "",
+    password: ""
   });
 
   const [loading, setLoading] = useState(false);
@@ -20,27 +20,18 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    try {
-      const res = await login(form);
+    const res = await login(form);
 
-      console.log("LOGIN RESPONSE:", res); // 👈 ADD THIS
+    if (res.token) {
+      setUser(res); // store token + role
 
-      if (!res || res.error) {
-        setError(res?.error || "Unknown error");
-        return;
-      }
+      // redirect by role
+      if (res.role === "admin") router.push("/admin");
+      else if (res.role === "staff") router.push("/staff");
+      else router.push("/");
 
-      setUser({
-        email: form.email,
-        role: res.role || "customer",
-        token: res.token,
-        name: res.name || form.email,
-      });
-
-      router.push("/");
-    } catch (err) {
-      console.log("LOGIN ERROR:", err); // 👈 ADD THIS
-      setError("Network error or server not responding");
+    } else {
+      setError(res.error || "Login failed");
     }
 
     setLoading(false);
@@ -49,42 +40,33 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
 
-      <div className="bg-white p-6 rounded-xl shadow w-96 space-y-3">
+      <div className="bg-white p-6 rounded-xl shadow w-80 space-y-3">
+        <h1 className="text-xl font-bold">Login</h1>
 
-        <h1 className="text-xl font-bold text-center">Login</h1>
-
-        {error && (
-          <div className="bg-red-100 text-red-600 p-2 rounded text-sm">
-            {error}
-          </div>
-        )}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <input
-          className="border p-2 w-full rounded"
+          className="border p-2 w-full"
           placeholder="Email"
-          onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
         <input
+          className="border p-2 w-full"
           type="password"
-          className="border p-2 w-full rounded"
           placeholder="Password"
-          onChange={(e) =>
-            setForm({ ...form, password: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="bg-blue-500 text-white w-full p-2 rounded hover:bg-blue-600 disabled:opacity-50"
+          className="bg-blue-500 text-white w-full p-2 rounded"
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Loading..." : "Login"}
         </button>
-
       </div>
+
     </div>
   );
 }

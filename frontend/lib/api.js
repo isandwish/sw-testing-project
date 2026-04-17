@@ -1,5 +1,8 @@
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+// =========================
+// Auth
+// =========================
 export const register = async (data) => {
   const res = await fetch(`${API}/auth/register`, {
     method: "POST",
@@ -20,29 +23,61 @@ export const login = async (data) => {
   return res.json();
 };
 
-// reservations
+// =========================
+// Helpers
+// =========================
+const getToken = () => {
+  if (typeof window === "undefined") return null;
+  const user = JSON.parse(localStorage.getItem("user"));
+  return user?.token;
+};
+
+const authHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${getToken()}`
+});
+
+// =========================
+// Reservations
+// =========================
 export const getAvailability = (data) =>
   fetch(`${API}/reservations/availability`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    method: "GET",
   }).then((r) => r.json());
 
 export const createReservation = (data) =>
   fetch(`${API}/reservations`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify(data),
   }).then((r) => r.json());
 
 export const updateReservation = (id, data) =>
   fetch(`${API}/reservations/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify(data),
   }).then((r) => r.json());
 
 export const cancelReservation = (id) =>
   fetch(`${API}/reservations/${id}`, {
     method: "DELETE",
+    headers: authHeaders(),
+  }).then((r) => r.json());
+
+// =========================
+// Staff APIs (NEW)
+// =========================
+export const updateTableStatus = (id, status) =>
+  fetch(`${API}/admin/tables/${id}/status`, {
+    method: "PUT",
+    headers: authHeaders(),
+    body: JSON.stringify({ status }),
+  }).then((r) => r.json());
+
+export const createWalkIn = (data) =>
+  fetch(`${API}/reservations/walk-in`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(data),
   }).then((r) => r.json());

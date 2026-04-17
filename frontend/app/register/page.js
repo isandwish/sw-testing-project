@@ -11,31 +11,22 @@ export default function RegisterPage() {
     fullName: "",
     email: "",
     password: "",
-    phoneNumber: "",
+    phoneNumber: ""
   });
 
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
     setLoading(true);
     setError("");
 
-    try {
-      const res = await register(form);
+    const res = await register(form);
 
-      console.log("REGISTER RESPONSE:", res); // 👈 ADD THIS
-
-      if (!res || res.error) {
-        setError(res?.error || "Unknown error");
-        return;
-      }
-
-      alert("Register success");
+    if (res.userId) {
       router.push("/login");
-    } catch (err) {
-      console.log("REGISTER ERROR:", err); // 👈 ADD THIS
-      setError("Network error or server not responding");
+    } else {
+      setError(res.error || "Register failed");
     }
 
     setLoading(false);
@@ -43,58 +34,46 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-6 rounded-xl shadow w-96 space-y-3">
 
-        <h1 className="text-xl font-bold text-center">Register</h1>
+      <div className="bg-white p-6 rounded-xl shadow w-80 space-y-3">
+        <h1 className="text-xl font-bold">Register</h1>
 
-        {error && (
-          <div className="bg-red-100 text-red-600 p-2 rounded text-sm">
-            {error}
-          </div>
-        )}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <input
-          className="border p-2 w-full rounded"
+          className="border p-2 w-full"
           placeholder="Full Name"
-          onChange={(e) =>
-            setForm({ ...form, fullName: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, fullName: e.target.value })}
         />
 
         <input
-          className="border p-2 w-full rounded"
+          className="border p-2 w-full"
           placeholder="Email"
-          onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
         <input
+          className="border p-2 w-full"
           type="password"
-          className="border p-2 w-full rounded"
           placeholder="Password"
-          onChange={(e) =>
-            setForm({ ...form, password: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 
         <input
-          className="border p-2 w-full rounded"
-          placeholder="Phone Number"
-          onChange={(e) =>
-            setForm({ ...form, phoneNumber: e.target.value })
-          }
+          className="border p-2 w-full"
+          placeholder="Phone (optional)"
+          onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
         />
 
         <button
           onClick={handleRegister}
           disabled={loading}
-          className="bg-green-500 text-white w-full p-2 rounded hover:bg-green-600 disabled:opacity-50"
+          className="bg-green-500 text-white w-full p-2 rounded"
         >
-          {loading ? "Creating account..." : "Register"}
+          {loading ? "Loading..." : "Register"}
         </button>
-
       </div>
+
     </div>
   );
 }
