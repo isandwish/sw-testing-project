@@ -23,31 +23,32 @@ export default function AvailabilityPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
 
-      <h1 className="text-2xl font-bold mb-4">
+      {/* TITLE */}
+      <h1 className="text-2xl font-bold mb-6">
         📅 Table Availability
       </h1>
 
-      {/* FORM */}
-      <div className="bg-white p-4 rounded shadow max-w-md space-y-3">
+      {/* FORM CARD */}
+      <div className="bg-white w-full max-w-md p-6 rounded-xl shadow space-y-4">
 
         <input
           type="date"
-          className="border p-2 w-full"
+          className="border p-2 w-full rounded"
           onChange={(e) => setForm({ ...form, date: e.target.value })}
         />
 
         <input
           type="time"
-          className="border p-2 w-full"
+          className="border p-2 w-full rounded"
           onChange={(e) => setForm({ ...form, time: e.target.value })}
         />
 
         <input
           type="number"
           min={1}
-          className="border p-2 w-full"
+          className="border p-2 w-full rounded"
           placeholder="Guest count"
           onChange={(e) =>
             setForm({ ...form, guestCount: Number(e.target.value) })
@@ -56,7 +57,7 @@ export default function AvailabilityPage() {
 
         <button
           onClick={handleCheck}
-          className="bg-blue-500 text-white w-full p-2 rounded"
+          className="bg-blue-500 text-white w-full p-2 rounded hover:bg-blue-600 transition"
         >
           {loading ? "Checking..." : "Check Availability"}
         </button>
@@ -65,17 +66,24 @@ export default function AvailabilityPage() {
 
       {/* RESULT */}
       {result && (
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2">
+        <div className="mt-8 w-full max-w-4xl">
+
+          <h2 className="text-lg font-semibold mb-4 text-center">
             Available Tables
           </h2>
 
           {result.availableTables?.length === 0 ? (
-            <p className="text-gray-500">No tables available</p>
+            <p className="text-center text-gray-500">
+              No tables available
+            </p>
           ) : (
             <div className="grid md:grid-cols-3 gap-4">
+
               {result.availableTables.map((table) => (
-                <div key={table.id} className="card">
+                <div
+                  key={table.id}
+                  className="bg-white p-4 rounded-xl shadow hover:shadow-md transition text-center"
+                >
                   <h3 className="font-semibold">
                     Table #{table.id}
                   </h3>
@@ -84,20 +92,12 @@ export default function AvailabilityPage() {
                   </p>
                 </div>
               ))}
+
             </div>
           )}
+
         </div>
       )}
-
-      {/* STYLE */}
-      <style jsx>{`
-        .card {
-          background: white;
-          padding: 1rem;
-          border-radius: 12px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-      `}</style>
 
     </div>
   );
