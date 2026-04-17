@@ -16,12 +16,12 @@ export default function StaffReservationsPage() {
   const [loading, setLoading] = useState(true);
 
   // =========================
-  // Protect route (staff only)
+  // Protect route
   // =========================
   useEffect(() => {
     const user = getUser();
 
-    if (!user || user.role !== "staff") {
+    if (!user || user.role !== "Staff") {
       router.push("/");
     }
   }, []);
@@ -52,7 +52,7 @@ export default function StaffReservationsPage() {
   const handleStatusChange = async (id, status) => {
     try {
       await updateReservation(id, { status });
-      await fetchReservations();
+      await fetchReservations(); // refresh
     } catch (err) {
       console.error("Update failed:", err);
     }
