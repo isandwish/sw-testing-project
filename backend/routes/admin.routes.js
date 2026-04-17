@@ -2,22 +2,61 @@ const express = require('express');
 const router = express.Router();
 
 const { verifyToken } = require('../middleware/auth.middleware');
-const { restaurantDB, notificationsDB } = require('../data/mockDB');
+const { restaurantDB, notificationsDB, tablesDB } = require('../data/mockDB');
 
-// Admin: View Reservations
+
+// =========================
+// Constants / Helpers
+// =========================
+const VALID_TABLE_STATUS = ['AVAILABLE', 'OCCUPIED', 'OUT_OF_SERVICE'];
+
+const isValidEmail = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+const isValidPhone = (phone) =>
+    /^[0-9]{10,15}$/.test(phone);
+
+const isAdminOrStaff = (role) =>
+    ['admin', 'staff'].includes(role);
+
+
+// =========================
+// View Reservations (Admin + Staff)
+// =========================
 router.get('/reservations', verifyToken, (req, res) => {
-    if (req.user.role !== 'admin') {
+    if (!isAdminOrStaff(req.user.role)) {
         return res.status(403).json({ error: 'Forbidden' });
     }
 
-    res.json([
-        { reservationId: 5001, status: 'CONFIRMED' }
-    ]);
+    const result = reservationsDB.map(r => ({
+        id: r.id,
+        tableId: r.tableId,
+        date: r.date,
+        time: r.time,
+        guestCount: r.guestCount,
+        status: r.status,
+        createdByRole: r.createdByRole,
+
+        // customer info (supports walk-in)
+        customer: {
+            userId: r.userId || null,
+            fullName: r.customerName || null,
+            email: r.customerEmail || null,
+            phoneNumber: r.customerPhone || null
+        }
+    }));
+
+    res.status(200).json({
+        count: result.length,
+        reservations: result
+    });
 });
 
-// FR-08: View Notifications
+// =========================
+// FR-08 View Notifications (Admin + Staff)
+// =========================
 router.get('/notifications', verifyToken, (req, res) => {
-    if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+    if (!isAdminOrStaff(req.user.role)) {
         return res.status(403).json({ error: 'Forbidden' });
     }
 
@@ -26,18 +65,19 @@ router.get('/notifications', verifyToken, (req, res) => {
     });
 });
 
-// FR-09 Update Table Status
+
+// =========================
+// FR-09 Update Table Status (Admin + Staff)
+// =========================
 router.put('/tables/:id/status', verifyToken, (req, res) => {
-    if (req.user.role !== 'staff' && req.user.role !== 'admin') {
+    if (!isAdminOrStaff(req.user.role)) {
         return res.status(403).json({ error: 'Forbidden' });
     }
 
-    const tableId = parseInt(req.params.id);
+    const tableId = Number(req.params.id);
     const { status } = req.body;
 
-    const validStatus = ['AVAILABLE', 'OCCUPIED', 'OUT_OF_SERVICE'];
-
-    if (!validStatus.includes(status)) {
+    if (!VALID_TABLE_STATUS.includes(status)) {
         return res.status(400).json({ error: 'Invalid status' });
     }
 
@@ -55,12 +95,9 @@ router.put('/tables/:id/status', verifyToken, (req, res) => {
     });
 });
 
-// Get Restaurant Info
-router.get('/restaurant', (req, res) => {
-    res.status(200).json(restaurantDB);
-});
-
-// FR-12 Update Restaurant Info
+// =========================
+// FR-12 Update Restaurant Info (Admin only)
+// =========================
 router.put('/restaurant', verifyToken, (req, res) => {
     if (req.user.role !== 'admin') {
         return res.status(403).json({ error: 'Forbidden' });
@@ -68,7 +105,7 @@ router.put('/restaurant', verifyToken, (req, res) => {
 
     const { name, openingHour, closingHour, contact } = req.body;
 
-    // ---------- validation ----------
+    // ---- Validation ----
     if (name && name.length < 2) {
         return res.status(400).json({ error: 'Invalid restaurant name' });
     }
@@ -83,16 +120,16 @@ router.put('/restaurant', verifyToken, (req, res) => {
     }
 
     if (contact) {
-        if (contact.phone && !/^[0-9]{10,15}$/.test(contact.phone)) {
+        if (contact.phone && !isValidPhone(contact.phone)) {
             return res.status(400).json({ error: 'Invalid phone number' });
         }
 
-        if (contact.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email)) {
+        if (contact.email && !isValidEmail(contact.email)) {
             return res.status(400).json({ error: 'Invalid email' });
         }
     }
 
-    // ---------- update ----------
+    // ---- Update ----
     if (name) restaurantDB.name = name;
     if (openingHour) restaurantDB.openingHour = openingHour;
     if (closingHour) restaurantDB.closingHour = closingHour;
