@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getUser } from "@/lib/auth";
-import { getTables } from "@/lib/api";
+import { getTables, updateTableStatus } from "@/lib/api";
 
 export default function StaffDashboard() {
   const router = useRouter();
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(null);
 
   // =========================
   // Protect Route
@@ -21,7 +22,7 @@ export default function StaffDashboard() {
       return;
     }
 
-    if (user.role !== "staff") {
+    if (user.role !== "staff" && user.role !== "admin") {
       router.push("/");
     }
   }, []);
@@ -32,9 +33,7 @@ export default function StaffDashboard() {
   const fetchTables = async () => {
     try {
       setLoading(true);
-
       const data = await getTables();
-
       setTables(data.tables || []);
     } catch (err) {
       console.error("Failed to fetch tables:", err);
@@ -47,6 +46,23 @@ export default function StaffDashboard() {
   useEffect(() => {
     fetchTables();
   }, []);
+
+  // =========================
+  // Update Table Status
+  // =========================
+  const handleStatusChange = async (id, status) => {
+    try {
+      setUpdating(id);
+
+      await updateTableStatus(id, status);
+
+      await fetchTables();
+    } catch (err) {
+      console.error("Update failed:", err);
+    } finally {
+      setUpdating(null);
+    }
+  };
 
   // =========================
   // UI helpers
@@ -89,7 +105,7 @@ export default function StaffDashboard() {
           {tables.map((table) => (
             <div
               key={table.id}
-              className="bg-white p-4 rounded shadow hover:shadow-md transition"
+              className="bg-white p-4 rounded-xl shadow hover:shadow-md transition"
             >
               <h2 className="font-semibold text-lg">
                 Table #{table.id}
@@ -99,6 +115,7 @@ export default function StaffDashboard() {
                 Capacity: {table.capacity}
               </p>
 
+              {/* STATUS */}
               <span
                 className={`inline-block mt-2 px-2 py-1 text-xs rounded ${getStatusColor(
                   table.status
@@ -106,6 +123,41 @@ export default function StaffDashboard() {
               >
                 {table.status}
               </span>
+
+              {/* ACTIONS */}
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button
+                  disabled={updating === table.id}
+                  onClick={() => handleStatusChange(table.id, "AVAILABLE")}
+                  className="text-xs bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+                >
+                  Available
+                </button>
+
+                <button
+                  disabled={updating === table.id}
+                  onClick={() => handleStatusChange(table.id, "OCCUPIED")}
+                  className="text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                >
+                  Occupied
+                </button>
+
+                <button
+                  disabled={updating === table.id}
+                  onClick={() =>
+                    handleStatusChange(table.id, "OUT_OF_SERVICE")
+                  }
+                  className="text-xs bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600"
+                >
+                  Out
+                </button>
+              </div>
+
+              {updating === table.id && (
+                <p className="text-xs text-gray-400 mt-2">
+                  Updating...
+                </p>
+              )}
             </div>
           ))}
         </div>

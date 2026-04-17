@@ -85,7 +85,7 @@ export default function Home() {
 
         {/* STAFF */}
         {user?.role === "staff" && (
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 gap-6">
 
             <div className="card cursor-pointer" onClick={() => router.push("/staff")}>
               <h3 className="font-semibold">👨‍🍳 Staff Dashboard</h3>
@@ -98,13 +98,6 @@ export default function Home() {
               <h3 className="font-semibold">📋 Manage Reservations</h3>
               <p className="text-gray-500 text-sm">
                 View and update reservations
-              </p>
-            </div>
-
-            <div className="card cursor-pointer" onClick={() => router.push("/staff/tables")}>
-              <h3 className="font-semibold">🪑 Table Status</h3>
-              <p className="text-gray-500 text-sm">
-                Update table availability
               </p>
             </div>
 
