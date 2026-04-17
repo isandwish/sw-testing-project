@@ -19,5 +19,8 @@
 * PUT /admin/tables/:id/status
 * PUT /admin/restaurant
 
+## 👤 User
+* GET /users/profile
+
 ## 🌍 Public
 * GET /restaurant

@@ -3,12 +3,22 @@ const router = express.Router();
 
 const { usersDB } = require('../data/mockDB');
 
-// profile
+
+// =========================
+// Get User Profile
+// =========================
 router.get('/profile', (req, res) => {
-    res.json({
-        id: usersDB[0].id,
-        email: usersDB[0].email,
-        role: usersDB[0].role
+    // mock current user (temporary: first user in DB)
+    const user = usersDB[0];
+
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({
+        id: user.id,
+        email: user.email,
+        role: user.role
     });
 });
 
