@@ -108,24 +108,58 @@ export default function Home() {
         {user?.role === "admin" && (
           <div className="grid md:grid-cols-3 gap-6">
 
-            <div className="card cursor-pointer" onClick={() => router.push("/admin")}>
-              <h3 className="font-semibold">👑 Admin Panel</h3>
+            {/* DASHBOARD */}
+            <div
+              className="card cursor-pointer"
+              onClick={() => router.push("/admin")}
+            >
+              <h3 className="font-semibold">📊 Admin Dashboard</h3>
               <p className="text-gray-500 text-sm">
-                System overview & management
+                Overview: reservations, tables status, system summary
               </p>
             </div>
 
-            <div className="card cursor-pointer" onClick={() => router.push("/admin/restaurant")}>
+            {/* RESTAURANT SETTINGS */}
+            <div
+              className="card cursor-pointer"
+              onClick={() => router.push("/admin/restaurant")}
+            >
               <h3 className="font-semibold">⚙️ Restaurant Settings</h3>
               <p className="text-gray-500 text-sm">
-                Configure restaurant info
+                Manage restaurant info, opening hours, contact
               </p>
             </div>
 
-            <div className="card cursor-pointer" onClick={() => router.push("/admin/reports")}>
-              <h3 className="font-semibold">📊 Reports</h3>
+            {/* TABLES */}
+            <div
+              className="card cursor-pointer"
+              onClick={() => router.push("/admin/tables")}
+            >
+              <h3 className="font-semibold">🪑 Tables Management</h3>
               <p className="text-gray-500 text-sm">
-                View system analytics
+                Create, edit, delete tables (CRUD)
+              </p>
+            </div>
+
+            {/* RESERVATIONS */}
+            <div
+              className="card cursor-pointer"
+              onClick={() => router.push("/admin/reservations")}
+            >
+              <h3 className="font-semibold">📋 Reservations</h3>
+              <p className="text-gray-500 text-sm">
+                Full control: confirm, cancel, delete bookings
+              </p>
+            </div>
+
+            {/* NOTIFICATIONS */}
+            <div
+              className="card cursor-pointer"
+              onClick={() => router.push("/admin/notifications")}
+            >
+              <h3 className="font-semibold">🔔 Notifications</h3>
+              <p className="text-gray-500 text-sm">
+                Reservation created / updated / cancelled
               </p>
             </div>
 

@@ -17,7 +17,15 @@ const tablesDB = [
 // existing reservations (mock)
 const reservationsDB = [];
 
-const notificationsDB = [];
+const notificationsDB = [
+  {
+    id: 1,
+    type: "CREATED",
+    message: "New reservation created",
+    tableId: 3,
+    createdAt: "2026-04-17 10:00"
+  }
+];
 
 const restaurantDB = {
     name: "My Restaurant",

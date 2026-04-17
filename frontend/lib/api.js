@@ -132,3 +132,37 @@ export const deleteTable = async (id) => {
 
   return res.json();
 };
+
+export const getRestaurant = async () => {
+  const res = await fetch(`${API}/restaurant`, {
+    headers: authHeaders(),
+  });
+
+  return res.json();
+};
+
+export const updateRestaurant = async (data) => {
+  const res = await fetch(`${API}/admin/restaurant`, {
+    method: "PUT",
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  return res.json();
+};
+
+export const getAllReservations = async () => {
+  const res = await fetch(`${API}/admin/reservations`, {
+    headers: authHeaders(),
+  });
+
+  return res.json();
+};
+
+export const getNotifications = async () => {
+  const res = await fetch(`${API}/admin/notifications`, {
+    headers: authHeaders(),
+  });
+
+  return res.json();
+};
