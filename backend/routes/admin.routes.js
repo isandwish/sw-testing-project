@@ -26,6 +26,14 @@ const isAdminOrStaff = (role) =>
 
 const isAdmin = (role) => role === 'admin';
 
+function addHours(time, hours) {
+    const [h, m] = time.split(":").map(Number);
+    const date = new Date();
+    date.setHours(h + hours, m || 0, 0);
+
+    return date.toTimeString().slice(0, 5);
+}
+
 // =========================
 // View Reservations (Admin + Staff)
 // =========================
@@ -34,7 +42,7 @@ router.get('/reservations', verifyToken, (req, res) => {
         return res.status(403).json({ error: 'Forbidden' });
     }
 
-    const result = (reservationsDB || []).map(r => ({
+    const result = reservationsDB.map(r => ({
         id: r.id,
         tableId: r.tableId,
         date: r.date,
@@ -43,7 +51,13 @@ router.get('/reservations', verifyToken, (req, res) => {
         status: r.status,
         createdByRole: r.createdByRole,
 
-        // customer info (supports walk-in)
+        // ⭐ NEW: booking timestamp
+        createdAt: r.createdAt || new Date(r.id).toISOString(),
+
+        // ⭐ NEW: time range (simulate 2-hour slot)
+        startTime: r.time,
+        endTime: addHours(r.time, 2),
+
         customer: {
             userId: r.userId || null,
             fullName: r.customerName || null,
