@@ -3,6 +3,8 @@ const router = express.Router();
 
 const { tablesDB, reservationsDB } = require('../data/mockDB');
 
+const { verifyToken } = require('../middleware/auth.middleware');
+
 function createNotification(type, reservation) {
     notificationsDB.push({
         id: Date.now(),
