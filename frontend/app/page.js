@@ -106,51 +106,84 @@ export default function Home() {
         {/* CUSTOMER */}
         {user?.role === "customer" && (
           <div className="grid md:grid-cols-3 gap-6">
-            <Link href="/customer" className="card hover:bg-green-50">
-              🍽 Make Reservation
-            </Link>
 
-            <Link href="/customer/history" className="card">
-              📋 My Reservations
-            </Link>
+            <div className="card cursor-pointer" onClick={() => router.push("/customer")}>
+              <h3 className="font-semibold">🍽 Make Reservation</h3>
+              <p className="text-gray-500 text-sm">
+                Book a table at your favorite restaurant
+              </p>
+            </div>
 
-            <Link href="/availability" className="card">
-              📅 Check Availability
-            </Link>
+            <div className="card cursor-pointer" onClick={() => router.push("/customer/history")}>
+              <h3 className="font-semibold">📋 My Reservations</h3>
+              <p className="text-gray-500 text-sm">
+                View and manage your bookings
+              </p>
+            </div>
+
+            <div className="card cursor-pointer" onClick={() => router.push("/availability")}>
+              <h3 className="font-semibold">📅 Check Availability</h3>
+              <p className="text-gray-500 text-sm">
+                See available tables before booking
+              </p>
+            </div>
+
           </div>
         )}
 
         {/* STAFF */}
         {user?.role === "staff" && (
           <div className="grid md:grid-cols-3 gap-6">
-            <Link href="/staff" className="card hover:bg-blue-50">
-              👨‍🍳 Staff Dashboard
-            </Link>
 
-            <Link href="/staff/reservations" className="card">
-              📋 Manage Reservations
-            </Link>
+            <div className="card cursor-pointer" onClick={() => router.push("/staff")}>
+              <h3 className="font-semibold">👨‍🍳 Staff Dashboard</h3>
+              <p className="text-gray-500 text-sm">
+                Manage restaurant operations
+              </p>
+            </div>
 
-            <Link href="/staff/tables" className="card">
-              🪑 Table Status
-            </Link>
+            <div className="card cursor-pointer" onClick={() => router.push("/staff/reservations")}>
+              <h3 className="font-semibold">📋 Manage Reservations</h3>
+              <p className="text-gray-500 text-sm">
+                View and update reservations
+              </p>
+            </div>
+
+            <div className="card cursor-pointer" onClick={() => router.push("/staff/tables")}>
+              <h3 className="font-semibold">🪑 Table Status</h3>
+              <p className="text-gray-500 text-sm">
+                Update table availability
+              </p>
+            </div>
+
           </div>
         )}
 
         {/* ADMIN */}
         {user?.role === "admin" && (
           <div className="grid md:grid-cols-3 gap-6">
-            <Link href="/admin" className="card hover:bg-red-50">
-              👑 Admin Panel
-            </Link>
 
-            <Link href="/admin/restaurant" className="card">
-              ⚙️ Restaurant Settings
-            </Link>
+            <div className="card cursor-pointer" onClick={() => router.push("/admin")}>
+              <h3 className="font-semibold">👑 Admin Panel</h3>
+              <p className="text-gray-500 text-sm">
+                System overview & management
+              </p>
+            </div>
 
-            <Link href="/admin/reports" className="card">
-              📊 Reports
-            </Link>
+            <div className="card cursor-pointer" onClick={() => router.push("/admin/restaurant")}>
+              <h3 className="font-semibold">⚙️ Restaurant Settings</h3>
+              <p className="text-gray-500 text-sm">
+                Configure restaurant info
+              </p>
+            </div>
+
+            <div className="card cursor-pointer" onClick={() => router.push("/admin/reports")}>
+              <h3 className="font-semibold">📊 Reports</h3>
+              <p className="text-gray-500 text-sm">
+                View system analytics
+              </p>
+            </div>
+
           </div>
         )}
 

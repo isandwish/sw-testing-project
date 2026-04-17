@@ -25,10 +25,7 @@ export default function LoginPage() {
     if (res.token) {
       setUser(res); // store token + role
 
-      // redirect by role
-      if (res.role === "admin") router.push("/admin");
-      else if (res.role === "staff") router.push("/staff");
-      else router.push("/");
+      router.push("/");
 
     } else {
       setError(res.error || "Login failed");
