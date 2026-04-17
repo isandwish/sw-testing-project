@@ -16,8 +16,21 @@
 const express = require('express');
 const router = express.Router();
 
-const { tablesDB, reservationsDB } = require('../data/mockDB');
+const { tablesDB, reservationsDB, notificationsDB} = require('../data/mockDB');
 const { verifyToken } = require('../middleware/auth.middleware');
+
+// helper
+const createNotification = (type, message, tableId) => {
+    const newNoti = {
+        id: notificationsDB.length + 1,
+        type, // CREATED | UPDATED | CANCELLED
+        message,
+        tableId,
+        createdAt: new Date().toISOString()
+    };
+
+    notificationsDB.unshift(newNoti); // latest first
+};
 
 // ------------------------------
 // Helpers
@@ -98,6 +111,12 @@ router.post('/', verifyToken, (req, res) => {
 
     reservationsDB.push(reservation);
 
+    createNotification(
+        "CREATED",
+        `New reservation created (Table ${reservation.tableId})`,
+        reservation.tableId
+    );
+
     res.status(201).json(reservation);
 });
 
@@ -120,6 +139,12 @@ router.put('/:id', verifyToken, (req, res) => {
     }
 
     Object.assign(reservation, req.body);
+
+    createNotification(
+        "UPDATED",
+        `Reservation updated (ID ${id})`,
+        reservation.tableId
+    );
 
     res.json({
         message: 'Updated',
@@ -148,6 +173,12 @@ router.delete('/:id', verifyToken, (req, res) => {
     }
 
     reservationsDB.splice(index, 1);
+
+    createNotification(
+        "CANCELLED",
+        `Reservation cancelled (ID ${id})`,
+        reservation.tableId
+    );
 
     res.json({ message: 'Deleted' });
 });

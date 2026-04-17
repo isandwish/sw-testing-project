@@ -85,7 +85,6 @@ router.get('/notifications', verifyToken, (req, res) => {
     });
 });
 
-
 // =========================
 // FR-09 Update Table Status (Admin + Staff)
 // =========================
