@@ -21,7 +21,7 @@ export default function StaffReservationsPage() {
   useEffect(() => {
     const user = getUser();
 
-    if (!user || user.role !== "Staff") {
+    if (!user || user.role !== "staff") {
       router.push("/");
     }
   }, []);
@@ -45,18 +45,6 @@ export default function StaffReservationsPage() {
   useEffect(() => {
     fetchReservations();
   }, []);
-
-  // =========================
-  // Update status
-  // =========================
-  const handleStatusChange = async (id, status) => {
-    try {
-      await updateReservation(id, { status });
-      await fetchReservations(); // refresh
-    } catch (err) {
-      console.error("Update failed:", err);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -111,32 +99,6 @@ export default function StaffReservationsPage() {
               <p className="text-xs text-gray-500">
                 👥 {r.guestCount} guests
               </p>
-
-              {/* ACTIONS */}
-              <div className="flex flex-wrap gap-2 mt-3">
-
-                <button
-                  onClick={() => handleStatusChange(r.id, "CONFIRMED")}
-                  className="text-xs bg-green-500 text-white px-2 py-1 rounded"
-                >
-                  Confirm
-                </button>
-
-                <button
-                  onClick={() => handleStatusChange(r.id, "CANCELLED")}
-                  className="text-xs bg-red-500 text-white px-2 py-1 rounded"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  onClick={() => handleStatusChange(r.id, "COMPLETED")}
-                  className="text-xs bg-blue-500 text-white px-2 py-1 rounded"
-                >
-                  Complete
-                </button>
-
-              </div>
 
             </div>
           ))}

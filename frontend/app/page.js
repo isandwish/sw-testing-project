@@ -273,7 +273,7 @@ export default function Home() {
             {/* RESERVATIONS */}
             <div
               className="card cursor-pointer"
-              onClick={() => router.push("/admin/reservations")}
+              onClick={() => router.push("/staff/reservations")}
             >
               <h3 className="font-semibold">📋 Reservations</h3>
               <p className="text-gray-500 text-sm">
