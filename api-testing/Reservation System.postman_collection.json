@@ -1,0 +1,3190 @@
+{
+  "info": {
+    "_postman_id": "df669b75-7ae2-465d-b46b-f64c6a0c5462",
+    "name": "Reservation System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38271364"
+  },
+  "item": [
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Authentication",
+          "item": [
+            {
+              "name": "Login Admin",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Tests",
+                      "const data = pm.response.json();",
+                      "const reqBody = pm.request.body;",
+                      "",
+                      "pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                      "",
+                      "pm.expect(data).to.have.property(\"token\");",
+                      "pm.expect(data).to.have.property(\"role\");",
+                      "",
+                      "if (pm.response.code === 201 || pm.response.code === 200) {",
+                      "  pm.collectionVariables.set(\"adminAccessToken\", data.token);",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\":\"admin@admin.com\",\n  \"password\":\"Admin1234\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/login",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Admin Control (System Admin)",
+          "item": [
+            {
+              "name": "Happy Path",
+              "item": [
+                {
+                  "name": "Update Restaurant",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(200);\r",
+                          "\r",
+                          "pm.test(\"Status code is 200\", () => {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Validate updated info\", () => {\r",
+                          "    const data = pm.response.json();\r",
+                          "    pm.expect(data.message).to.eql(\"Restaurant info updated\");\r",
+                          "    pm.expect(data.restaurant.name).to.eql(\"New Restaurant\");\r",
+                          "    pm.expect(data.restaurant.contact.email).to.eql(\"test@email.com\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"New Restaurant\",\n  \"openingHour\": \"10:00\",\n  \"closingHour\": \"22:00\",\n  \"contact\": {\n    \"phone\": \"0812345678\",\n    \"email\": \"test@email.com\"\n  }\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/restaurant",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "restaurant"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Notifications",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Validate notifications array\", () => {\r",
+                          "    const data = pm.response.json();\r",
+                          "    pm.expect(data.notifications).to.be.an('array');\r",
+                          "    pm.expect(data.notifications[0].type).to.be.oneOf([\"CANCELLED\", \"UPDATED\", \"CREATED\"]);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "x-role",
+                        "value": "admin"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/admin/notifications",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "notifications"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Negative Path",
+              "item": [
+                {
+                  "name": "Restaurant - Invalid Hours",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(400);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"openingHour\": \"22:00\",\n  \"closingHour\": \"10:00\"\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/restaurant",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "restaurant"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Restaurant - Invalid Email",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(400);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"contact\": {\n    \"email\": \"invalid\"\n  }\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/restaurant",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "restaurant"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Restaurant - Invalid Phone",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(400);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"contact\": {\n    \"phone\": \"abc\"\n  }\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/restaurant",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "restaurant"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Restaurant - Invalid Name",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(400);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"A\"\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/restaurant",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "restaurant"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Restaurant - Update (Not Admin)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(403);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "x-role",
+                        "value": "staff"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/admin/restaurant",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "restaurant"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Notifications - GET (Forbidden)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(403);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "x-role",
+                        "value": "customer"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/admin/notifications",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "notifications"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Table Management",
+          "item": [
+            {
+              "name": "Happy Path",
+              "item": [
+                {
+                  "name": "Get All Table",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "\r",
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+                          "pm.expect(data).to.be.an(\"array\");\r",
+                          "\r",
+                          "data.forEach((item) => {\r",
+                          "  pm.expect(item).to.have.property(\"tableId\");\r",
+                          "  pm.expect(item).to.have.property(\"capacity\");\r",
+                          "  pm.expect(item).to.have.property(\"status\");\r",
+                          "\r",
+                          "  pm.expect(item.tableId).to.be.a(\"number\");\r",
+                          "  pm.expect(item.capacity).to.be.a(\"number\");\r",
+                          "  pm.expect(item.status).to.be.a(\"string\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{adminAccessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/admin/tables/",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "tables",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create Table",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const res = pm.response.json();\r",
+                          "\r",
+                          "// status code\r",
+                          "pm.expect(pm.response.code).to.equal(201);\r",
+                          "\r",
+                          "// structure\r",
+                          "pm.expect(res).to.have.property(\"message\");\r",
+                          "pm.expect(res).to.have.property(\"table\");\r",
+                          "\r",
+                          "// table object\r",
+                          "pm.expect(res.table).to.have.property(\"id\");\r",
+                          "pm.expect(res.table).to.have.property(\"capacity\");\r",
+                          "pm.expect(res.table).to.have.property(\"status\");\r",
+                          "\r",
+                          "// type check\r",
+                          "pm.expect(res.table.id).to.be.a(\"number\");\r",
+                          "pm.expect(res.table.capacity).to.be.a(\"number\");\r",
+                          "pm.expect(res.table.status).to.be.a(\"string\");\r",
+                          "\r",
+                          "// value check\r",
+                          "pm.expect(res.table.capacity).to.be.above(0);\r",
+                          "\r",
+                          "// default status (ถ้าไม่ได้ส่ง)\r",
+                          "if (!pm.request.body.raw.includes(\"status\")) {\r",
+                          "    pm.expect(res.table.status).to.eql(\"AVAILABLE\");\r",
+                          "}"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{adminAccessToken}}",
+                        "type": "text"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"capacity\": 4\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/tables/",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "tables",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update Table",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const res = pm.response.json();\r",
+                          "\r",
+                          "// status\r",
+                          "pm.expect(pm.response.code).to.equal(200);\r",
+                          "\r",
+                          "// structure\r",
+                          "pm.expect(res).to.have.property(\"message\");\r",
+                          "pm.expect(res).to.have.property(\"table\");\r",
+                          "\r",
+                          "// table fields\r",
+                          "pm.expect(res.table).to.have.property(\"id\");\r",
+                          "pm.expect(res.table).to.have.property(\"capacity\");\r",
+                          "pm.expect(res.table).to.have.property(\"status\");\r",
+                          "\r",
+                          "// type check\r",
+                          "pm.expect(res.table.id).to.be.a(\"number\");\r",
+                          "pm.expect(res.table.capacity).to.be.a(\"number\");\r",
+                          "pm.expect(res.table.status).to.be.a(\"string\");\r",
+                          "\r",
+                          "// value check (ถ้าส่งไป)\r",
+                          "const reqBody = JSON.parse(pm.request.body.raw);\r",
+                          "\r",
+                          "if (reqBody.capacity !== undefined) {\r",
+                          "    pm.expect(res.table.capacity).to.eql(reqBody.capacity);\r",
+                          "}\r",
+                          "\r",
+                          "if (reqBody.status !== undefined) {\r",
+                          "    pm.expect(res.table.status).to.eql(reqBody.status);\r",
+                          "}"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{adminAccessToken}}",
+                        "type": "text"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"capacity\": 10\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/tables/{{tableId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "tables",
+                        "{{tableId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete Table",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Validate table deletion\", () => {\r",
+                          "    const data = pm.response.json();\r",
+                          "    pm.expect(data.message).to.eql(\"Table deleted\");\r",
+                          "\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{adminAccessToken}}",
+                        "type": "text"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/admin/tables/{{tableId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "tables",
+                        "{{tableId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Negative Path",
+              "item": [
+                {
+                  "name": "Create - Required Capacity",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(400);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{staffAccessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/tables",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "tables"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create - Invalid Capacity",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(400);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"capacity\": 0\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/tables",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "tables"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update - Table Not Found",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(404);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"capacity\": 5\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/tables/999999",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "tables",
+                        "999999"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete - Table Not Found",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(404);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "x-role",
+                        "value": "admin"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/admin/tables/999999",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "tables",
+                        "999999"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Reservation Management",
+          "item": [
+            {
+              "name": "Happy Path",
+              "item": [
+                {
+                  "name": "Cancel  Reservation",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "const reqBody = pm.request.body;",
+                          "",
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                          "",
+                          "pm.expect(data).to.have.property(\"message\");",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/{{reservationId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "{{reservationId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update  Reservation",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "const reqBody = pm.request.body;",
+                          "",
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                          "pm.expect(data.time).to.eql(reqBody.time);",
+                          "",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"time\": \"20:00\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/{{reservationId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "{{reservationId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get All  Reservation",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "",
+                          "pm.test(\"Validate reservation list\", () => {",
+                          "    const data = pm.response.json();",
+                          "    pm.expect(data.count).to.be.a('number');",
+                          "    pm.expect(data.reservations).to.be.an('array');",
+                          "    pm.expect(data.reservations[0].status).to.eql(\"CONFIRMED\");",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{adminAccessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "admin",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/admin/reservations/",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "reservations",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Staff",
+      "item": [
+        {
+          "name": "Authentication",
+          "item": [
+            {
+              "name": "Login Staff",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Tests",
+                      "const data = pm.response.json();",
+                      "const reqBody = pm.request.body;",
+                      "",
+                      "pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                      "",
+                      "pm.expect(data).to.have.property(\"token\");",
+                      "pm.expect(data).to.have.property(\"role\");",
+                      "",
+                      "if (pm.response.code === 201 || pm.response.code === 200) {",
+                      "  pm.collectionVariables.set(\"staffAccessToken\", data.token);",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\":\"staff@staff.com\",\r\n    \"password\":\"Staff1234\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/login",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Reservation Management",
+          "item": [
+            {
+              "name": "Happy Path",
+              "item": [
+                {
+                  "name": "Get All Reservation",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const data = pm.response.json();",
+                          "",
+                          "pm.expect(pm.response.code).to.equal(200);",
+                          "",
+                          "// เช็คโครงสร้างก่อน",
+                          "pm.expect(data).to.have.property(\"count\");",
+                          "pm.expect(data).to.have.property(\"reservations\");",
+                          "pm.expect(data.reservations).to.be.an(\"array\");",
+                          "",
+                          "// loop ใน array ที่ถูกต้อง",
+                          "data.reservations.forEach((item) => {",
+                          "  pm.expect(item).to.have.property(\"id\"); ",
+                          "  pm.expect(item).to.have.property(\"status\");",
+                          "  pm.expect(item).to.have.property(\"date\");",
+                          "  pm.expect(item).to.have.property(\"time\");",
+                          "  pm.expect(item).to.have.property(\"tableId\");",
+                          "  pm.expect(item).to.have.property(\"guestCount\");",
+                          "",
+                          "  pm.expect(item.id).to.be.a(\"number\");",
+                          "  pm.expect(item.status).to.be.a(\"string\");",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{staffAccessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "staff",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/admin/reservations/",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "reservations",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create Reservation (Walk-in)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "const reqBody = pm.request.body;",
+                          "",
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                          "",
+                          "pm.expect(data).to.have.property(\"id\");",
+                          "pm.expect(data).to.have.property(\"status\");",
+                          "pm.expect(data.status).to.equal(\"CONFIRMED\");",
+                          "",
+                          "if (pm.response.code === 201 || pm.response.code === 200) {",
+                          "  pm.collectionVariables.set(\"reservationId\", data.id);",
+                          "}"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "mock-jwt-token",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{staffAccessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "staff",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"customerName\": \"John Smith\",\n  \"date\": \"2026-04-18\",\n  \"time\": \"18:00\",\n  \"guestCount\": 4,\n  \"specialRequest\": \"Walk-in customer\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/walk-in",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "walk-in"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update  Reservation (Walk-in)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "const reqBody = pm.request.body;",
+                          "",
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                          "pm.expect(data.time).to.eql(reqBody.time);",
+                          "",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "staff",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"time\": \"20:00\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/{{reservationId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "{{reservationId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Cancel Reservation (Walk-in)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Validate delete message\", () => {\r",
+                          "    pm.expect(pm.response.json().message).to.eql(\"Deleted\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer  {{adminAccessToken}}",
+                        "type": "text"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "staff",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/{{reservationId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "{{reservationId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Nagative Path",
+              "item": [
+                {
+                  "name": "Create  (Walk-in) - Unauthorized",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.be.oneOf([403]);",
+                          "",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "mock-jwt-token",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"customerName\": \"John Smith\",\n  \"date\": \"2026-04-18\",\n  \"time\": \"18:00\",\n  \"guestCount\": 4,\n  \"specialRequest\": \"Walk-in customer\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/walk-in",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "walk-in"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Table Management",
+          "item": [
+            {
+              "name": "Happy Path",
+              "item": [
+                {
+                  "name": "Get All Table",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "",
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                          "pm.expect(data).to.be.an(\"array\");",
+                          "",
+                          "data.forEach((item) => {",
+                          "  pm.expect(item).to.have.property(\"tableId\");",
+                          "  pm.expect(item).to.have.property(\"capacity\");",
+                          "  pm.expect(item).to.have.property(\"status\");",
+                          "",
+                          "  pm.expect(item.tableId).to.be.a(\"number\");",
+                          "  pm.expect(item.capacity).to.be.a(\"number\");",
+                          "  pm.expect(item.status).to.be.a(\"string\");",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{staffAccessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "staff",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/admin/tables",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "tables"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update Table (Status)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "",
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 201]);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{staffAccessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "tableId",
+                        "value": "",
+                        "type": "text"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "staff",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"status\":\"OUT_OF_SERVICE\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/tables/{{tableId}}/status",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "tables",
+                        "{{tableId}}",
+                        "status"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Negative Path",
+              "item": [
+                {
+                  "name": "Update - Invalid Status",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 400\", () => {\r",
+                          "    pm.response.to.have.status(400);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Check property exists\", () => {\r",
+                          "    pm.expect(pm.response.json()).to.have.property('error');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "x-role",
+                        "value": "staff",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"status\":\"INVALIDSTATUS\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/admin/tables/{{tableId}}/status",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "tables",
+                        "{{tableId}}",
+                        "status"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User (Daily Operations)",
+      "item": [
+        {
+          "name": "Authentication",
+          "item": [
+            {
+              "name": "Happy Path",
+              "item": [
+                {
+                  "name": "Login Customer",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "const reqBody = pm.request.body;",
+                          "",
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                          "",
+                          "pm.expect(data).to.have.property(\"token\");",
+                          "pm.expect(data).to.have.property(\"role\");",
+                          "",
+                          "if (pm.response.code === 201 || pm.response.code === 200) {",
+                          "  pm.collectionVariables.set(\"accessToken\", data.token);",
+                          "}"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"john@email.com\", \n  \"password\": \"Password123\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/auth/login",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Register Customer",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"fullName\": \"John Smith\", \n  \"email\": \"john@email.com\", \n  \"password\": \"Password123\", \n  \"phoneNumber\": \"0812345678\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/auth/register",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "register"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Negative Path",
+              "item": [
+                {
+                  "name": "Login - Wrong Email",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(401);",
+                          "",
+                          "pm.expect(pm.response.json()).to.have.property('error');"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"wrong@email.com\", \n  \"password\": \"Password123\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/auth/login",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Login - Wrong Password",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(401);",
+                          "",
+                          "pm.expect(pm.response.json()).to.have.property('error');"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"john@email.com\", \n  \"password\": \"WrongPassword\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/auth/login",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Register - Duplicate Email",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.be.oneOf([409]);",
+                          "",
+                          "pm.expect(pm.response.json()).to.have.property('error');",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"fullName\": \"John Again\", \n  \"email\": \"john@email.com\", \n  \"password\": \"JohnAgain\", \n  \"phoneNumber\": \"0812345678\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/auth/register",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "register"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Register - Invalid Email Format",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.be.oneOf([400]);",
+                          "",
+                          "pm.expect(pm.response.json()).to.have.property('error');"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"fullName\": \"John Again\", \n  \"email\": \"InvalidEmail\", \n  \"password\": \"JohnAgain\", \n  \"phoneNumber\": \"0812345678\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/auth/register",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "register"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Register - Invalid Full name",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.be.oneOf([400]);",
+                          "",
+                          "pm.expect(pm.response.json()).to.have.property('error');"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"fullName\": \"\", \n  \"email\": \"InvalidFullname@email.com\", \n  \"password\": \"InvalidFullname\", \n  \"phoneNumber\": \"0812345678\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/auth/register",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "register"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Register - Invalid Phone Number",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.be.oneOf([400]);",
+                          "",
+                          "pm.expect(pm.response.json()).to.have.property('error');"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"fullName\": \"InvalidPhoneNumber\", \n  \"email\": \"InvalidPhoneNumber@email.com\", \n  \"password\": \"InvalidPhoneNumber\", \n  \"phoneNumber\": \"InvalidPhoneNumber\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/auth/register",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "register"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Reservation",
+          "item": [
+            {
+              "name": "Negative Path",
+              "item": [
+                {
+                  "name": "Cancel - Deleted Reservation",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(404);",
+                          "pm.expect(pm.response.json()).to.have.property('error');"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content_Type",
+                        "value": "application/json",
+                        "description": "JSON Type",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/{{reservationId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "{{reservationId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Cancel - Less than 1hr",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.expect(pm.response.code).to.equal(400);",
+                          "pm.expect(pm.response.json()).to.have.property('error');"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/{{reservationId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "{{reservationId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create - Double Booking (Iterations)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "",
+                          "if (pm.response.code  === 201) {",
+                          "  pm.environment.set(\"is_double_booking_blocked\", false);",
+                          "}",
+                          "else if (pm.response.code === 409) {",
+                          "  pm.environment.set(\"is_double_booking_blocked\", true);",
+                          "}",
+                          "",
+                          "pm.expect(pm.response.code).to.be.oneOf([201, 409]);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"date\": \"2026-05-21\", \n  \"time\": \"18:00\", \n  \"guestCount\": 4, \n  \"specialRequest\": \"Window seat\" \n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create - Missing required fields",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "pm.response.to.have.status(400);",
+                          "",
+                          "pm.expect(pm.response.json()).to.have.property('error');"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n\n  \"time\": \"18:00\", \n  \"guestCount\": 4, \n  \"specialRequest\": \"Window seat\" \n}\n\n// Missing Date",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create - Outside Operating Hours",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "",
+                          "pm.expect(pm.response.code).to.equal(400);",
+                          "pm.expect(pm.response.json()).to.have.property('error');"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"date\": \"2026-05-22\", \n  \"time\": \"04:00\", \n  \"guestCount\": 4, \n  \"specialRequest\": \"Window seat\" \n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create - Over Capacity",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "",
+                          "pm.expect(pm.response.code).to.equal(400);",
+                          "pm.expect(pm.response.json()).to.have.property('error');"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"date\": \"2026-05-23\", \n  \"time\": \"18:00\", \n  \"guestCount\": 20, \n  \"specialRequest\": \"Window seat\" \n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create - Past Date",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "",
+                          "pm.expect(pm.response.code).to.equal(400);",
+                          "pm.expect(data).to.have.property(\"message\");"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"date\": \"2025-05-20\", \n  \"time\": \"18:00\", \n  \"guestCount\": 4, \n  \"specialRequest\": \"Window seat\" \n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update - After The Reservation Time",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "",
+                          "pm.expect(pm.response.code).to.equal(400);",
+                          "pm.expect(data).to.have.property(\"message\");"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"specialRequest\": \"Test Update After The Reservation Time\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/{{reservationId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "{{reservationId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update - Deleted Reservation",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "",
+                          "pm.expect(pm.response.code).to.equal(404);",
+                          "pm.expect(data).to.have.property(\"message\");"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"specialRequest\": \"Test Update Deleted Reservation\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/{{reservationId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "{{reservationId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Happy Path",
+              "item": [
+                {
+                  "name": "Create My Reservation",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "const reqBody = pm.request.body;",
+                          "",
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                          "",
+                          "pm.expect(data).to.have.property(\"id\");",
+                          "pm.expect(data).to.have.property(\"status\");",
+                          "pm.expect(data.status).to.equal(\"CONFIRMED\");",
+                          "",
+                          "if (pm.response.code === 201 || pm.response.code === 200) {",
+                          "  pm.environment.set(\"reservationId\", data.reservationId);",
+                          "}"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"date\": \"2026-04-20\", \n  \"time\": \"18:20\", \n  \"guestCount\": 4, \n  \"specialRequest\": \"Window seat\" \n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get My Reservation",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const data = pm.response.json();",
+                          "",
+                          "// status code",
+                          "pm.expect(pm.response.code).to.equal(200);",
+                          "",
+                          "// ต้องมี count",
+                          "pm.expect(data).to.have.property(\"count\");",
+                          "pm.expect(data.count).to.be.a(\"number\");",
+                          "",
+                          "// ต้องมี reservations เป็น array",
+                          "pm.expect(data).to.have.property(\"reservations\");",
+                          "pm.expect(data.reservations).to.be.an(\"array\");",
+                          "",
+                          "// loop ตรวจแต่ละตัว",
+                          "data.reservations.forEach((item) => {",
+                          "  pm.expect(item).to.have.property(\"id\");",
+                          "  pm.expect(item).to.have.property(\"tableId\");",
+                          "  pm.expect(item).to.have.property(\"date\");",
+                          "  pm.expect(item).to.have.property(\"time\");",
+                          "  pm.expect(item).to.have.property(\"guestCount\");",
+                          "  pm.expect(item).to.have.property(\"status\");",
+                          "  pm.expect(item).to.have.property(\"createdByRole\");",
+                          "",
+                          "  pm.expect(item.id).to.be.a(\"number\");",
+                          "  pm.expect(item.tableId).to.be.a(\"number\");",
+                          "  pm.expect(item.date).to.be.a(\"string\");",
+                          "  pm.expect(item.time).to.be.a(\"string\");",
+                          "  pm.expect(item.guestCount).to.be.a(\"number\");",
+                          "  pm.expect(item.status).to.be.a(\"string\");",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/history",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "history"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update My Reservation",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "const reqBody = pm.request.body;",
+                          "",
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                          "pm.expect(data.time).to.eql(reqBody.time);",
+                          "",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"time\": \"20:00\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/{{reservationId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "{{reservationId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Cancel My Reservation",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// Tests",
+                          "const data = pm.response.json();",
+                          "const reqBody = pm.request.body;",
+                          "",
+                          "pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                          "",
+                          "pm.expect(data).to.have.property(\"message\");",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "x-role",
+                        "value": "customer",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/{{reservationId}}",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "{{reservationId}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Table",
+          "item": [
+            {
+              "name": "Happy Path",
+              "item": [
+                {
+                  "name": "Get Available Table",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const res = pm.response.json();\r",
+                          "const query = pm.request.url.query.toObject();\r",
+                          "\r",
+                          "\r",
+                          "pm.response.to.have.status(200);\r",
+                          "\r",
+                          "\r",
+                          "pm.expect(res.date).to.not.be.undefined;\r",
+                          "pm.expect(res.time).to.not.be.undefined;\r",
+                          "pm.expect(res.guestCount).to.not.be.undefined;\r",
+                          "pm.expect(res.availableTables).to.not.be.undefined;\r",
+                          "\r",
+                          "\r",
+                          "pm.expect(res.availableTables).to.be.an(\"array\");\r",
+                          "\r",
+                          "const guestCount = Number(query.guestCount);\r",
+                          "\r",
+                          "res.availableTables.forEach(table => {\r",
+                          "    pm.expect(table.capacity).to.be.at.least(guestCount);\r",
+                          "});\r",
+                          "\r",
+                          "const ids = res.availableTables.map(t => t.id);\r",
+                          "pm.expect(ids.length).to.eql(new Set(ids).size);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "mock-jwt-token",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/availability?date=2026-04-20&time=18:00&guestCount=4",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "availability"
+                      ],
+                      "query": [
+                        {
+                          "key": "date",
+                          "value": "2026-04-20"
+                        },
+                        {
+                          "key": "time",
+                          "value": "18:00"
+                        },
+                        {
+                          "key": "guestCount",
+                          "value": "4"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Negative Path",
+              "item": [
+                {
+                  "name": "Get - Missing Required Fields",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.response.to.have.status(400);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/availability",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "availability"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get - Invalid Guest Count",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.response.to.have.status(400);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "",
+                        "value": "",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseURL}}/reservations/availability?date=2026-04-20&time=18:00&guestCount=0",
+                      "host": [
+                        "{{baseURL}}"
+                      ],
+                      "path": [
+                        "reservations",
+                        "availability"
+                      ],
+                      "query": [
+                        {
+                          "key": "date",
+                          "value": "2026-04-20"
+                        },
+                        {
+                          "key": "time",
+                          "value": "18:00"
+                        },
+                        {
+                          "key": "guestCount",
+                          "value": "0"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseURL",
+      "value": ""
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "reservationId",
+      "value": ""
+    },
+    {
+      "key": "tableId",
+      "value": ""
+    },
+    {
+      "key": "staffAccessToken",
+      "value": ""
+    },
+    {
+      "key": "adminAccessToken",
+      "value": ""
+    },
+    {
+      "key": "baseUrl",
+      "value": ""
+    }
+  ]
+}
